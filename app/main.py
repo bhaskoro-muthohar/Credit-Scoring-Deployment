@@ -13,10 +13,10 @@ import lightgbm
 
 app = FastAPI()
 
-# Initialize logging
+# Initialize logging 
 my_logger = logging.getLogger()
 my_logger.setLevel(logging.DEBUG)
-# logging.basicConfig(level=logging.DEBUG, filename='sample.log')
+logging.basicConfig(level=logging.DEBUG, filename='sample.log')
 
 # Initialize files
 clf = pickle.load(open('data/model.pickle', 'rb'))
@@ -44,13 +44,15 @@ def predict(data: Data):
         to_predict = [data_dict[feature] for feature in features]
 
         # Apply one-hot encoding
-        encoded_features = list(enc.transform(np.array(to_predict[-2:]).reshape(1, -1))[0])
-        to_predict = np.array(to_predict[:-2] + encoded_features)
+        encoded_features = list(
+            enc.transform(np.array([to_predict[1], to_predict[2], to_predict[5]]).reshape(1, -1))[0])
+        to_predict = np.array(
+            [to_predict[0], to_predict[3], to_predict[4], to_predict[6], to_predict[7]] + encoded_features)
 
         # Create and return prediction
         prediction = clf.predict(to_predict.reshape(1, -1))
         return {"prediction": int(prediction[0])}
-    
+
     except:
         my_logger.error("Something went wrong!")
         return {"prediction": "error"}
