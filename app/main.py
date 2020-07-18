@@ -33,7 +33,6 @@ class Data(BaseModel):
     bank: str
     salary: float
     amount: float
-    Label: float
         
         
 @app.post("/predict")
@@ -50,7 +49,7 @@ def predict(data: Data):
             [to_predict[0], to_predict[3], to_predict[4], to_predict[6], to_predict[7]] + encoded_features)
 
         # Create and return prediction
-        prediction = clf.predict(to_predict.reshape(1, -1))
+        prediction = clf.predict_proba(to_predict.reshape(1, -1))
         return {"prediction": int(prediction[0])}
 
     except:
